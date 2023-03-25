@@ -1,0 +1,75 @@
+.home {
+   
+  height: auto;
+}
+.heading_task_manager {
+  margin: 0px;
+  text-align: center;
+  font-size: 2em;
+  padding: 20px;
+}
+.sprint_modal{
+     position: absolute;
+     top: 300px;
+     left: 600px;
+     width: 300px;
+     height: 300px;
+     background-color: lightgray;
+     border-radius: 10px;
+     text-align: center;
+}
+.sprint_modal  > button{
+ background-color: lightgreen;
+ width: 100px;
+ height: 30px;
+ border-radius: 5px;
+ font-size: 1em;
+ font-weight: 700;
+ cursor: pointer;
+
+}
+
+@keyframes customEnterOverlayAnimation {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes customLeaveOverlayAnimation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+
+@keyframes customEnterModalAnimation {
+  0% {
+    transform: scale(0.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes customLeaveModalAnimation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.2);
+  }
+}
+.closeButton{
+  color: darkred;
+}
+
+td{
+  border: 2px solid black;
+  color: black;
+  gap: 20px;
+  font-size: 22px;
+  padding: 10px;
+}
