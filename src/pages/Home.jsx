@@ -148,7 +148,7 @@ export const Home = () => {
   }
   function handelSprintDel(id) {
     axios
-      .delete(`http://localhost:8080/sprintdel/${id}`, {
+      .delete(`https://katydid-top-hat.cyclic.app/sprintdel/${id}`, {
         headers: {
           userid: localStorage.getItem("userid"),
           auth: token,
@@ -167,7 +167,7 @@ export const Home = () => {
   function handelTaskStatusTogal(id, status) {
     axios
       .patch(
-        `http://localhost:8080/taskupdate/${id}`,
+        `https://katydid-top-hat.cyclic.app/taskupdate/${id}`,
         { complete: !status },
         {
           headers: {
