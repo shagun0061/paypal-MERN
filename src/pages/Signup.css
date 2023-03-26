@@ -4,15 +4,20 @@
   background-color: lightcoral;
   padding: 20px;
   margin: 40px auto;
-  text-align: center;
+ display:flex;
+ flex-direction: column ;
+ align-items: center;
+ justify-content: center;
   font-size: 22px;
   border-radius: 20px;
+  text-align: center;
 }
 label {
   color: darkblue;
   font-weight: 700;
 }
-input ,select{
+input,
+select {
   width: 70%;
   height: 25px;
   border-radius: 20px;

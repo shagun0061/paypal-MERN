@@ -1,11 +1,12 @@
 .nav {
-    
+  color: black;
   display: flex;
   height: 40px;
   background-color: lightblue;
   align-items: center;
   justify-content: space-evenly;
   font-size: 1.5em;
+  font-weight:800 
 }
 @media only screen and (max-width: 320px) {
   .nav {
@@ -25,6 +26,6 @@
        font-weight: 200;
      }
      .navName{
-        display: none;
+        color: black;
      }
    }

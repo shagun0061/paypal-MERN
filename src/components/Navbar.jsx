@@ -5,11 +5,11 @@ export const Navbar = () => {
   return (
     <div className="nav">
       <div className="navName">Navbar</div>
-      <Link style={{ textDecoration: "none" ,color:"teal" }} to={"/"}>
+      <Link style={{ textDecoration: "none" ,color:"red",fontWeight:800 }} to={"/"}>
         Task Manager📑
       </Link>
-      <Link to={"/signin"} style={{ textDecoration: "none" ,color:"teal" }} >Signin 📍</Link>
-      <Link to={"/signup"} style={{ textDecoration: "none" ,color:"teal" }} >Signup 📜</Link>
+      <Link to={"/signin"} style={{ textDecoration: "none" ,color:"red",fontWeight:800  }} >Signin 📍</Link>
+      <Link to={"/signup"} style={{ textDecoration: "none" ,color:"red",fontWeight:800  }} >Signup 📜</Link>
     </div>
   );
 };

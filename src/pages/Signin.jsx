@@ -14,6 +14,8 @@ export const Signin = () => {
         .post("https://katydid-top-hat.cyclic.app/signin", payload)
         .then((res) => {
           localStorage.setItem("Token", res.data.token);
+          localStorage.setItem("userid", res.data.userid);
+          console.log(res);
           if (res.data == "Register first") {
             alert(res.data);
           } else {

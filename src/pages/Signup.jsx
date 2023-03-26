@@ -29,10 +29,10 @@ export const Signup = () => {
     <div>
       <h2>Signup📜</h2>
       <div className="signin-main">
-        <img
+        <div style={{}}><img
           src="https://www.freeiconspng.com/thumbs/login-icon/user-login-icon-14.png"
           width={"100px"}
-        />
+        /></div>
         <form
           onSubmit={(event) => {
             handelsignup(event);
@@ -84,6 +84,7 @@ export const Signup = () => {
           />
           <br></br>
           <input className="btn" type="submit" />
+          
         </form>
       </div>
     </div>

@@ -1,45 +1,79 @@
 import axios from "axios";
 import "./Home.css";
 import React, { useState, useEffect } from "react";
+
 import "react-responsive-modal/styles.css";
-import { Modal } from "react-responsive-modal";
+// import { Modal } from "react-responsive-modal";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Stack,
+  Tr,
+  Th,
+  Td,
+  FormControl,
+  TableContainer,
+  Button,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Input,
+  FormLabel,
+  Modal,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
+import { Radio, RadioGroup } from "@chakra-ui/react";
 
 export const Home = () => {
-  const [sprint, setSprint] = useState("");
-  const [taskvl, setTaskval] = useState("");
-  const [status, setStaus] = useState("");
-  const [category, setCategory] = useState("");
-  const [user, setUser] = useState("");
+  const {
+    isOpen: isSprintOpen,
+    onOpen: onSprintOpen,
+    onClose: onSprintClose,
+  } = useDisclosure();
+  const {
+    isOpen: isTaskOpen,
+    onOpen: onTaskOpen,
+    onClose: onTaskClose,
+  } = useDisclosure();
+  const initialRef = React.useRef(null);
+  const finalRef = React.useRef(null);
 
-  const [show, setShow] = useState(false);
+  const [taskdiscription, setTaskdiscription] = useState("");
+  const [status, setStaus] = useState("false");
+  const [category, setCategory] = useState("feature");
+
+  const [sprint, setSprint] = useState("");
+  const [user, setUser] = useState("");
 
   const [data, setData] = useState("");
   const [task, setTask] = useState("");
 
-  const [open, setOpen] = useState(false);
-  console.log(data, task);
-  function onOpenModal() {
-    setOpen(true);
-  }
-
-  function onCloseModal() {
-    setOpen(false);
-  }
-
   let impPayload = {
-    title: taskvl,
+    title: taskdiscription,
     category: category,
     complete: status,
     user: user,
   };
+  const toast = useToast();
 
   function openModule2(id) {
-    console.log(id);
     setUser(id);
-    setShow(true);
   }
-  function lastFunc() {
-    console.log(impPayload, "sdfjjkds");
+
+  function handelTaskAdd() {
+    impPayload.linkid = localStorage.getItem("userid");
+
     axios
       .post("https://katydid-top-hat.cyclic.app/taskadd", impPayload, {
         headers: {
@@ -47,7 +81,13 @@ export const Home = () => {
         },
       })
       .then((res) => {
-        setShow(false);
+        toast({
+          title: `${res.data}`,
+          position: "top",
+          status: "success",
+          isClosable: true,
+        });
+        onTaskClose();
         getdata();
       });
   }
@@ -66,6 +106,7 @@ export const Home = () => {
         "https://katydid-top-hat.cyclic.app/sprintadd",
         {
           sprintname: sprint,
+          linkid: localStorage.getItem("userid"),
         },
         {
           headers: {
@@ -74,10 +115,37 @@ export const Home = () => {
         }
       )
       .then((res) => {
-        alert(res.data);
+        toast({
+          title: `${res.data}`,
+          status: "success",
+          position: "top",
+          isClosable: true,
+        });
+
+        onSprintClose();
         getdata();
       });
-    setOpen(false);
+  }
+
+  function handelTaskDelet(id) {
+    let payload = { id: id, linkid: localStorage.getItem("userid") };
+    console.log(token, "dsj", localStorage.getItem("Token"));
+    axios
+      .delete(`https://katydid-top-hat.cyclic.app/taskdel/${id}`, {
+        headers: {
+          userid: localStorage.getItem("userid"),
+          auth: token,
+        },
+      })
+      .then((res) => {
+        toast({
+          title: `${res.data}`,
+          position: "top",
+          status: "error",
+          isClosable: true,
+        });
+        getdata();
+      });
   }
   useEffect(() => {
     getdata();
@@ -86,119 +154,149 @@ export const Home = () => {
   return (
     <div className="home">
       <p className="heading_task_manager">Task Manager</p>
-
-      <div>
-        <button
-          onClick={onOpenModal}
-          style={{ backgroundColor: "lightgreen", borderRadius: "10px" }}
+      {/* Modal 1 */}
+      <Box>
+        <Button
+          style={{ backgroundColor: "lightgreen", margin: "10px" }}
+          onClick={onSprintOpen}
         >
-          Add Sprint ➕
-        </button>
+          Create Sprint
+        </Button>
+
         <Modal
-          classNames={{
-            overlayAnimationIn: "customEnterOverlayAnimation",
-            overlayAnimationOut: "customLeaveOverlayAnimation",
-            modalAnimationIn: "customEnterModalAnimation",
-            modalAnimationOut: "customLeaveModalAnimation",
-          }}
-          animationDuration={500}
-          open={open}
-          onClose={onCloseModal}
-          center
+          initialFocusRef={initialRef}
+          finalFocusRef={finalRef}
+          isOpen={isSprintOpen}
+          onClose={onSprintClose}
         >
-          <input
-            style={{ textAlign: "center", marginTop: "20px" }}
-            placeholder="Sprint Name"
-            onChange={(e) => {
-              setSprint(e.target.value);
-            }}
-          />
-          <div style={{ textAlign: "center" }}>
-            <button
-              onClick={() => {
-                handelSprintCreate();
-              }}
-              style={{ backgroundColor: "lightgreen", borderRadius: "10px" }}
-            >
-              Create
-            </button>
-          </div>
-        </Modal>
-      </div>
-      {show && (
-        <div
-          style={{
-            width: "300px",
-            backgroundColor: "teal",
-            borderRadius: "20px",
-            position: "absolute",
-            alignItems: "center",
-            top: "300px",
-            left: "600px",
-            padding: "30px",
-          }}
-        >
-          <div
+          <ModalOverlay />
+          <ModalContent
             style={{
+              backgroundColor: "pink",
+              width: "400px",
+              padding: "20px",
               position: "absolute",
-              top: "0px",
-              right: "0px",
-              padding: "30px",
+              top: "200px",
+              right: "600px",
             }}
           >
-            <button
-              onClick={() => {
-                setShow(false);
+            <ModalHeader>Create Sprint 📜</ModalHeader>
+            <ModalCloseButton
+              style={{
+                width: "50px",
+                position: "absolute",
+                top: "200px",
+                right: "600px",
               }}
-            >
-              X
-            </button>
-          </div>
-          <input
-            onChange={(e) => {
-              setTaskval(e.target.value);
-            }}
-            placeholder="title"
-          />
-          <br></br>
-          <select
-            name="staus"
-            id="staus"
-            onChange={(e) => {
-              setStaus(e.target.value);
-            }}
-          >
-            <option>staus</option>
-            <option value="false">Pending</option>
-            <option value="true">Done</option>
-          </select>
+            />
+            <ModalBody pb={6}>
+              <FormControl>
+                <FormLabel>Sprint Name</FormLabel>
+                <Input
+                  ref={initialRef}
+                  onChange={(e) => {
+                    setSprint(e.target.value);
+                  }}
+                  placeholder="First name"
+                />
+              </FormControl>
+            </ModalBody>
 
-          <br></br>
-          <select
-            name="category"
-            id="category"
-            onChange={(e) => {
-              setCategory(e.target.value);
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={() => {
+                  handelSprintCreate();
+                }}
+              >
+                Create
+              </Button>
+              <Button onClick={onSprintClose}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Box>
+
+      {/* Modal 2*/}
+      <Box>
+        <Modal
+          initialFocusRef={initialRef}
+          finalFocusRef={finalRef}
+          isOpen={isTaskOpen}
+          onClose={onTaskClose}
+        >
+          <ModalOverlay />
+          <ModalContent
+            style={{
+              backgroundColor: "pink",
+              width: "400px",
+              padding: "20px",
+              position: "absolute",
+              top: "200px",
+              right: "600px",
             }}
           >
-            <option>category</option>
-            <option value="bug">Bug</option>
-            <option value="feature">Feature</option>
-            <option value="story.">story.</option>
-          </select>
-          <br></br>
-          <div>
-            <button
-              style={{ marginLeft: "80px" }}
-              onClick={() => {
-                lastFunc();
+            <ModalHeader>Create Task 📜</ModalHeader>
+            <ModalCloseButton
+              style={{
+                width: "50px",
+                position: "absolute",
+                top: "200px",
+                right: "600px",
               }}
-            >
-              Task Add
-            </button>{" "}
-          </div>
-        </div>
-      )}
+            />
+            <ModalBody pb={6}>
+              <FormControl>
+                <FormLabel>Task discription</FormLabel>
+                <Input
+                  ref={initialRef}
+                  onChange={(e) => {
+                    setTaskdiscription(e.target.value);
+                  }}
+                  placeholder="Task discription"
+                />
+
+                <FormLabel>Category</FormLabel>
+                <RadioGroup onChange={setCategory} value={category}>
+                  <Stack direction="row">
+                    <Radio value="bug">Bug</Radio>
+                    <Radio value="story">story</Radio>
+                    <Radio value="feature" defaultChecked>
+                      Feature
+                    </Radio>
+                  </Stack>
+                </RadioGroup>
+
+                <FormLabel>Task Status</FormLabel>
+                <RadioGroup onChange={setStaus} value={status}>
+                  <Stack direction="row">
+                    <Radio value="false" defaultChecked>
+                      Pending
+                    </Radio>
+                    <Radio value="true">Complete</Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={() => {
+                  handelTaskAdd();
+                }}
+              >
+                Create Task
+              </Button>
+              <Button onClick={onTaskClose}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Box>
+
+      {/* Main */}
       <div
         style={{
           padding: "20px",
@@ -207,47 +305,76 @@ export const Home = () => {
         {data &&
           data.map((ele) => {
             return (
-              <fieldset
-                style={{
-                  borderRadius: "10px",
-                  backgroundColor: "lightblue",
-                  marginTop: "55px",
-                  color: "white",
-                }}
+              <Accordion
+                style={{ border: "1px solid gray", marginTop: "20px" }}
+                defaultIndex={[0]}
+                allowMultiple
               >
-                <legend>
-                  <h3
-                    style={{ color: "red", fontSize: "36px", fontWeight: 800 }}
+                <AccordionItem>
+                  {/* <h2> */}
+                  <AccordionButton
+                    style={{ backgroundColor: "lightcoral", fontWeight: 900 }}
                   >
-                    {ele.sprintname}
-                  </h3>
-                </legend>
+                    <Box as="span" flex="1" textAlign="left">
+                      {ele.sprintname}
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
 
-                {task &&
-                  task.map((e) => {
-                    if (ele._id == e.user) {
-                      return (
-                        <tr>
-                          <td>{e.title}</td>
-                          <td>{e.category}</td>
-                          <td>{(e.complete = true ? "Not-Don" : "Done")}</td>
-                          <td style={{ backgroundColor: "pink" }}>deleate</td>
-                        </tr>
-                      );
-                    }
-                  })}
-                <button
-                  onClick={() => {
-                    openModule2(ele._id);
-                  }}
-                  style={{
-                    backgroundColor: "lightgreen",
-                    borderRadius: "10px",
-                  }}
-                >
-                  Add Task ➕
-                </button>
-              </fieldset>
+                  <AccordionPanel pb={4}>
+                    <TableContainer>
+                      <Table variant="simple">
+                        <Thead>
+                          <Tr>
+                            <Th>Task</Th>
+                            <Th>category</Th>
+                            <Th>Status</Th>
+                            <Th>Delete Task</Th>
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                          {task &&
+                            task.map((e) => {
+                              if (ele._id == e.user) {
+                                return (
+                                  <Tr>
+                                    <Td>{e.title}</Td>
+                                    <Td>{e.category}</Td>
+                                    <Td>
+                                      {(e.complete = true ? "Not-Don" : "Done")}
+                                    </Td>
+                                    <Td
+                                      style={{ backgroundColor: "pink" }}
+                                      onClick={() => {
+                                        handelTaskDelet(e._id);
+                                      }}
+                                    >
+                                      deleate
+                                    </Td>
+                                  </Tr>
+                                );
+                              }
+                            })}
+                          <Button
+                            onClick={() => {
+                              openModule2(ele._id);
+                              onTaskOpen();
+                            }}
+                            style={{
+                              backgroundColor: "lightgreen",
+                              borderRadius: "10px",
+                            }}
+                          >
+                            {" "}
+                            Add Task ➕{" "}
+                          </Button>
+                          <Button> deleate Sprint ➕ </Button>
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
+                  </AccordionPanel>
+                </AccordionItem>
+              </Accordion>
             );
           })}
       </div>
