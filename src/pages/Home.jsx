@@ -3,7 +3,7 @@ import "./Home.css";
 import React, { useState, useEffect } from "react";
 
 import "react-responsive-modal/styles.css";
-// import { Modal } from "react-responsive-modal";
+import { AiTwotoneDelete } from "react-icons/ai";
 import {
   Accordion,
   AccordionItem,
@@ -36,6 +36,7 @@ import { useToast } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@chakra-ui/react";
 
 export const Home = () => {
+  const [Flag, setFlag] = useState("");
   const {
     isOpen: isSprintOpen,
     onOpen: onSprintOpen,
@@ -128,8 +129,6 @@ export const Home = () => {
   }
 
   function handelTaskDelet(id) {
-    let payload = { id: id, linkid: localStorage.getItem("userid") };
-    console.log(token, "dsj", localStorage.getItem("Token"));
     axios
       .delete(`https://katydid-top-hat.cyclic.app/taskdel/${id}`, {
         headers: {
@@ -142,6 +141,45 @@ export const Home = () => {
           title: `${res.data}`,
           position: "top",
           status: "error",
+          isClosable: true,
+        });
+        getdata();
+      });
+  }
+  function handelSprintDel(id) {
+    axios
+      .delete(`http://localhost:8080/sprintdel/${id}`, {
+        headers: {
+          userid: localStorage.getItem("userid"),
+          auth: token,
+        },
+      })
+      .then((res) => {
+        toast({
+          title: `${res.data}`,
+          position: "top",
+          status: "error",
+          isClosable: true,
+        });
+        getdata();
+      });
+  }
+  function handelTaskStatusTogal(id, status) {
+    axios
+      .patch(
+        `http://localhost:8080/taskupdate/${id}`,
+        { complete: !status },
+        {
+          headers: {
+            userid: localStorage.getItem("userid"),
+            auth: token,
+          },
+        }
+      )
+      .then((res) => {
+        toast({
+          title: `${res.data}`,
+          position: "top",
           isClosable: true,
         });
         getdata();
@@ -313,7 +351,7 @@ export const Home = () => {
                 <AccordionItem>
                   {/* <h2> */}
                   <AccordionButton
-                    style={{ backgroundColor: "lightcoral", fontWeight: 900 }}
+                    style={{ backgroundColor: "lightblue", fontWeight: 900 }}
                   >
                     <Box as="span" flex="1" textAlign="left">
                       {ele.sprintname}
@@ -325,11 +363,47 @@ export const Home = () => {
                     <TableContainer>
                       <Table variant="simple">
                         <Thead>
-                          <Tr>
-                            <Th>Task</Th>
-                            <Th>category</Th>
-                            <Th>Status</Th>
-                            <Th>Delete Task</Th>
+                          <Tr style={{ textAlign: "center" }}>
+                            <Th
+                              style={{
+                                textAlign: "center",
+                                backgroundColor: "lightseagreen",
+                                fontSize: "22px",
+                                fontWeight: 700,
+                              }}
+                            >
+                              Task
+                            </Th>
+                            <Th
+                              style={{
+                                textAlign: "center",
+                                backgroundColor: "lightsalmon",
+                                fontSize: "22px",
+                                fontWeight: 700,
+                              }}
+                            >
+                              category
+                            </Th>
+                            <Th
+                              style={{
+                                textAlign: "center",
+                                backgroundColor: "lightskyblue",
+                                fontSize: "22px",
+                                fontWeight: 700,
+                              }}
+                            >
+                              Status
+                            </Th>
+                            <Th
+                              style={{
+                                textAlign: "center",
+                                backgroundColor: "lightyellow",
+                                fontSize: "22px",
+                                fontWeight: 700,
+                              }}
+                            >
+                              Delete Task
+                            </Th>
                           </Tr>
                         </Thead>
                         <Tbody>
@@ -338,18 +412,41 @@ export const Home = () => {
                               if (ele._id == e.user) {
                                 return (
                                   <Tr>
-                                    <Td>{e.title}</Td>
-                                    <Td>{e.category}</Td>
-                                    <Td>
-                                      {(e.complete = true ? "Not-Don" : "Done")}
+                                    <Td style={{ textAlign: "center" }}>
+                                      {e.title}
+                                    </Td>
+                                    <Td style={{ textAlign: "center" }}>
+                                      {e.category}
                                     </Td>
                                     <Td
-                                      style={{ backgroundColor: "pink" }}
+                                      onClick={() => {
+                                        handelTaskStatusTogal(
+                                          e._id,
+                                          e.complete
+                                        );
+                                      }}
+                                      style={{
+                                        backgroundColor: e.complete
+                                          ? "green"
+                                          : "pink",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {e.complete ? "Compleate" : "Pending"}
+                                      {console.log("chek4", e.complete)}
+                                    </Td>
+                                    <Td
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                      }}
                                       onClick={() => {
                                         handelTaskDelet(e._id);
                                       }}
                                     >
-                                      deleate
+                                      <AiTwotoneDelete
+                                        style={{ color: "red" }}
+                                      />
                                     </Td>
                                   </Tr>
                                 );
@@ -365,10 +462,23 @@ export const Home = () => {
                               borderRadius: "10px",
                             }}
                           >
-                            {" "}
                             Add Task ➕{" "}
                           </Button>
-                          <Button> deleate Sprint ➕ </Button>
+                          <Button
+                            style={{ backgroundColor: "pink", margin: "10px" }}
+                            onClick={(e) => {
+                              handelSprintDel(ele._id);
+                            }}
+                          >
+                            delete Sprint{" "}
+                            <AiTwotoneDelete
+                              style={{
+                                padding: "0px 0px 0px 5px",
+                                fontSize: "25px",
+                                color: "red",
+                              }}
+                            />
+                          </Button>
                         </Tbody>
                       </Table>
                     </TableContainer>
